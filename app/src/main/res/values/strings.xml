@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">LSR</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Preference Titles -->
+    <string name="general_header">Global</string>
+    <string name="wol_header">Wake On LAN</string>
+    <string name="ssh_header">SSH</string>
+
+    <!-- General Preferences -->
+    <string name="ip_title">IP</string>
+
+    <!-- WOL Preferences -->
+    <string name="mac_title">MAC</string>
+
+    <!-- SSH Preferences -->
+    <string name="username_title">Username</string>
+    <string name="password_title">Password</string>
+    <string name="command_title">Command</string>
+</resources>
