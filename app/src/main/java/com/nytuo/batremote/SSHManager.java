@@ -10,18 +10,20 @@ public class SSHManager {
     private final String host;
     private final String username;
     private final String password;
+    private final int port;
 
-    public SSHManager(String host, String username, String password) {
+    public SSHManager(String host, String username, String password, int port) {
         this.host = host;
         this.username = username;
         this.password = password;
+        this.port = port;
     }
 
     public String executeCommand(String command) {
         StringBuilder output = new StringBuilder();
         try {
             JSch jsch = new JSch();
-            Session session = jsch.getSession(username, host, 22); // SSH port
+            Session session = jsch.getSession(username, host, port); // SSH port
             session.setPassword(password);
 
             // Avoid asking for key confirmation

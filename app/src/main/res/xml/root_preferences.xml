@@ -19,7 +19,7 @@
     </PreferenceCategory>
     <PreferenceCategory
 
-        app:title="@string/ssh_header" >
+        app:title="@string/ssh_header">
         <EditTextPreference
             app:key="username"
             app:title="@string/username_title"
@@ -33,6 +33,25 @@
 
             app:key="command"
             app:title="@string/command_title"
+            app:useSimpleSummaryProvider="true" />
+        <EditTextPreference
+            app:key="sshport"
+            app:title="@string/ssh_port_title"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+    <PreferenceCategory
+
+        app:title="@string/status_header">
+        <EditTextPreference
+
+            app:key="status_port"
+            app:title="@string/status_port_title"
+            app:useSimpleSummaryProvider="true" />
+        <EditTextPreference
+
+
+            app:key="slug"
+            app:title="@string/slug_title"
             app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
 

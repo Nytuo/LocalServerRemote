@@ -3,10 +3,12 @@ package com.nytuo.batremote;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -16,7 +18,9 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.HttpURLConnection;
 import java.net.InetAddress;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -73,6 +77,43 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public boolean checkIfAvailable(String serverUrl) {
+        if (serverUrl.isEmpty()) {
+            Toast.makeText(this, "No IP", Toast.LENGTH_LONG).show();
+            return false;
+        }
+        if (!serverUrl.startsWith("http://")) {
+            serverUrl = "http://" + serverUrl;
+        }
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(this);
+        String port = sharedPreferences.getString("status_port", "");
+
+        if (!port.isEmpty()) {
+            serverUrl = serverUrl + ":" + port;
+        }
+        String slug = sharedPreferences.getString("slug", "");
+        if (!slug.isEmpty()) {
+            serverUrl = serverUrl + "/" + slug;
+        }
+        try {
+            URL url = new URL(serverUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(5000);
+            int responseCode = connection.getResponseCode();
+
+            boolean isAvailable = (responseCode == HttpURLConnection.HTTP_OK);
+
+            connection.disconnect();
+
+            return isAvailable;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+
     private void onPowerOffButtonClicked() {
         SharedPreferences sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(this);
@@ -80,11 +121,12 @@ public class MainActivity extends AppCompatActivity {
         String username = sharedPreferences.getString("username", "");
         String password = sharedPreferences.getString("password", "");
         String command = sharedPreferences.getString("command", "");
+        int port = Integer.parseInt(sharedPreferences.getString("sshport", "22"));
         if (ip.isEmpty() || username.isEmpty() || password.isEmpty() || command.isEmpty()) {
             Toast.makeText(getApplicationContext(), "Insufficient information", Toast.LENGTH_LONG).show();
             return;
         }
-        SSHManager sshManager = new SSHManager(ip, username, password);
+        SSHManager sshManager = new SSHManager(ip, username, password, port);
         String result = sshManager.executeCommand(command);
         Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG).show();
     }
@@ -106,14 +148,10 @@ public class MainActivity extends AppCompatActivity {
                 throw new RuntimeException(e);
             }
             ImageView imageView = findViewById(R.id.imageView);
-            try {
-                if (address.isReachable(5000)) {
-                    imageView.setImageResource(R.drawable.baseline_circle_24);
-                } else {
-                    imageView.setImageResource(R.drawable.baseline_circle_24_red);
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            if (checkIfAvailable(ip)) {
+                imageView.setImageResource(R.drawable.baseline_circle_24);
+            } else {
+                imageView.setImageResource(R.drawable.baseline_circle_24_red);
             }
         };
         scheduler.scheduleAtFixedRate(task, 0, 10, java.util.concurrent.TimeUnit.SECONDS);

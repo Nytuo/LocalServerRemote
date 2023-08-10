@@ -17,4 +17,8 @@
     <string name="username_title">Username</string>
     <string name="password_title">Password</string>
     <string name="command_title">Command</string>
+    <string name="ssh_port_title">SSH Port</string>
+    <string name="status_header">Status</string>
+    <string name="status_port_title">Status Port</string>
+    <string name="slug_title">Slug</string>
 </resources>
