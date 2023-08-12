@@ -12,6 +12,10 @@
     <PreferenceCategory app:title="@string/wol_header">
 
         <EditTextPreference
+            app:key="wol_ip"
+            app:title="@string/wol_ip"
+            app:useSimpleSummaryProvider="true" />
+        <EditTextPreference
             app:key="mac"
             app:title="@string/mac_title"
             app:useSimpleSummaryProvider="true" />

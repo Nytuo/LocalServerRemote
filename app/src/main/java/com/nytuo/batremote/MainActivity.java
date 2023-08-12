@@ -34,7 +34,10 @@ public class MainActivity extends AppCompatActivity {
     private void onPowerOnButtonClicked() {
         SharedPreferences sharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(this);
-        String ip = sharedPreferences.getString("ip", "");
+        String ip = sharedPreferences.getString("wol_ip", "");
+        if (ip.isEmpty()) {
+            ip = sharedPreferences.getString("ip", "");
+        }
         String mac = sharedPreferences.getString("mac", "");
         if (ip.isEmpty() || mac.isEmpty()) {
             Toast.makeText(getApplicationContext(), "No IP and/or MAC", Toast.LENGTH_LONG).show();
@@ -194,13 +197,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        scheduler.shutdown();
+        if (scheduler != null)
+            scheduler.shutdown();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (scheduler.isShutdown()) {
+
+        if (scheduler == null || scheduler.isShutdown()) {
             taskForce();
         }
         if (showInfo.get()) {
@@ -230,6 +235,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        scheduler.shutdown();
+        if (scheduler != null)
+            scheduler.shutdown();
     }
 }
